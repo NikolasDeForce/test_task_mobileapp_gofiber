@@ -13,7 +13,7 @@ var (
 	Port     = 5432
 	Username = "postgres"
 	Password = "password"
-	Database = "donationapp_rest"
+	Database = "mobileapp_rest"
 )
 
 func ConnectPostgres() (*sql.DB, error) {
