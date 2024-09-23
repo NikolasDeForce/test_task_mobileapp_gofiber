@@ -10,4 +10,6 @@ func PublicRoutes(a *fiber.App) {
 	route := a.Group("/api/v1")
 
 	route.Post("/register", controllers.CreateUserHandler)
+
+	route.Put("/:email/:password/token/new", controllers.UpdateTokenHandler)
 }
