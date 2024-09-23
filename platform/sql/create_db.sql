@@ -22,6 +22,7 @@ CREATE TABLE users (
 -- Create donates table
 CREATE TABLE transactions (
     id INT NOT NULL,
+    iduser INT NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW (),
     phonenumber VARCHAR (255) NOT NULL,
     summary INT NOT NULL
