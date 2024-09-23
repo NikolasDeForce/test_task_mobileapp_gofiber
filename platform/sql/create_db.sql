@@ -9,6 +9,7 @@ SET TIMEZONE="Europe/Moscow";
 CREATE TABLE users (
     id INT NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW (),
+    jwt VARCHAR (255) NOT NULL,
     fname VARCHAR (255) NOT NULL,
     email VARCHAR (255) NOT NULL,
     phonenumber VARCHAR (255) NOT NULL,
