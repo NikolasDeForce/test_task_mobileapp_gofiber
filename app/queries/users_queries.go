@@ -34,6 +34,33 @@ func GetAllUsers() ([]models.User, error) {
 	return users, nil
 }
 
+func GetUserBalance(phonenumber string) ([]models.User, error) {
+	db, err := db.ConnectPostgres()
+	if err != nil {
+		db.Close()
+		return []models.User{}, err
+	}
+	defer db.Close()
+
+	rows, err := db.Query("SELECT balance, phonenumber FROM users WHERE Phonenumber = $1 \n", phonenumber)
+	if err != nil {
+		return []models.User{}, err
+	}
+	users := []models.User{}
+
+	var c1, c10 int
+	var c2 time.Time
+	var c3, c4, c5, c6, c7, c8, c9 string
+
+	for rows.Next() {
+		err = rows.Scan(&c1, &c2, &c3, &c4, &c5, &c6, &c7, &c8, &c9, &c10)
+		temp := models.User{c1, c2, c3, c4, c5, c6, c7, c8, c9, c10}
+		users = append(users, temp)
+	}
+
+	return users, nil
+}
+
 func InsertUser(u models.User) error {
 	db, err := db.ConnectPostgres()
 	if err != nil {
