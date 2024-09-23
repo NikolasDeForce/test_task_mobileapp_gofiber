@@ -159,6 +159,28 @@ func UpdateUser(u models.User) error {
 	return nil
 }
 
+func UpdateBalance(u models.User) error {
+	db, err := db.ConnectPostgres()
+	if err != nil {
+		db.Close()
+		return err
+	}
+	defer db.Close()
+
+	if !IsUserValid(u) {
+		log.Println("User", u.Email, "not found!")
+		return err
+	}
+
+	stmt, err := db.Prepare("UPDATE users SET Balance = $2 WHERE Phonenumber = $1")
+	if err != nil {
+		return err
+	}
+
+	stmt.Exec(u.Phonenumber, u.Balance)
+	return nil
+}
+
 func FindUserId(id int) (models.User, error) {
 	db, err := db.ConnectPostgres()
 	if err != nil {
@@ -169,6 +191,41 @@ func FindUserId(id int) (models.User, error) {
 	defer db.Close()
 
 	rows, err := db.Query("SELECT * FROM users WHERE Id = $1 \n", id)
+	if err != nil {
+		log.Println("Query:", err)
+		return models.User{}, err
+	}
+	defer rows.Close()
+
+	u := models.User{}
+
+	var c1, c10 int
+	var c2 time.Time
+	var c3, c4, c5, c6, c7, c8, c9 string
+
+	for rows.Next() {
+		err := rows.Scan(&c1, &c2, &c3, &c4, &c5, &c6, &c7, &c8, &c9, &c10)
+		if err != nil {
+			log.Println(err)
+			return models.User{}, err
+		}
+
+		u = models.User{c1, c2, c3, c4, c5, c6, c7, c8, c9, c10}
+	}
+
+	return u, nil
+}
+
+func FindUserToken(jwt string) (models.User, error) {
+	db, err := db.ConnectPostgres()
+	if err != nil {
+		log.Println("Cannot connect to PostreSQL!")
+		db.Close()
+		return models.User{}, err
+	}
+	defer db.Close()
+
+	rows, err := db.Query("SELECT * FROM users WHERE Jwt = $1 \n", jwt)
 	if err != nil {
 		log.Println("Query:", err)
 		return models.User{}, err
