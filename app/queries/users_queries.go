@@ -193,3 +193,35 @@ func FindUserId(id int) (models.User, error) {
 
 	return u, nil
 }
+
+func IsJwtValid(u models.User) bool {
+	db, err := db.ConnectPostgres()
+	if err != nil {
+		db.Close()
+		return false
+	}
+	defer db.Close()
+
+	rows, err := db.Query("SELECT * FROM users WHERE Jwt = $1 \n", u.JWTToken)
+	if err != nil {
+		return false
+	}
+
+	temp := models.User{}
+	var c1, c10 int
+	var c2 time.Time
+	var c3, c4, c5, c6, c7, c8, c9 string
+
+	for rows.Next() {
+		err = rows.Scan(&c1, &c2, &c3, &c4, &c5, &c6, &c7, &c8, &c9, &c10)
+		if err != nil {
+			return false
+		}
+		temp = models.User{c1, c2, c3, c4, c5, c6, c7, c8, c9, c10}
+	}
+	if u.JWTToken == temp.JWTToken {
+		return true
+	}
+
+	return false
+}
