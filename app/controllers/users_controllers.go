@@ -182,13 +182,6 @@ func PayHandler(c *fiber.Ctx) error {
 	trcs.Phonenumber = c.Params("phonenumber")
 	trcs.Summary, _ = strconv.Atoi(c.Params("sum"))
 
-	err = queries.InsertTransaction(trcs)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": true,
-			"msg":   err.Error(),
-		})
-	}
 	if trcs.Summary > user.Balance {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": true,
@@ -198,6 +191,14 @@ func PayHandler(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": true,
 			"msg":   "balance cannot be minus",
+		})
+	}
+
+	err = queries.InsertTransaction(trcs)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": true,
+			"msg":   err.Error(),
 		})
 	}
 
@@ -214,6 +215,41 @@ func PayHandler(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{
 		"error": false,
 		"msg":   "payment succesful",
+	})
+}
+
+func UpdateTokenHandler(c *fiber.Ctx) error {
+	user := models.User{}
+	user.Email = c.Params("email")
+	user.Password = c.Params("password")
+
+	u, err := queries.FindUserEmail(user.Email)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": true,
+			"msg":   err.Error(),
+		})
+	}
+
+	if user.Password != u.Password {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": true,
+			"msg":   "passwords doesnt match",
+		})
+	}
+
+	err = queries.UpdateUserJWTToken(u)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": true,
+			"msg":   err.Error(),
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"error": false,
+		"msg":   "update jwt token succesful",
+		"jwt":   u.JWTToken,
 	})
 }
 
