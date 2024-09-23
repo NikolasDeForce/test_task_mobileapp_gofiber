@@ -7,6 +7,7 @@ import (
 type User struct {
 	ID          int       `db:"id" json:"id"`
 	CreatedAt   time.Time `db:"created_at" json:"created_at"`
+	JWTToken    string    `db:"jwt" json:"jwt" validate:"required,lte=255"`
 	FName       string    `db:"fname" json:"fname" validate:"required,lte=255"`
 	Email       string    `db:"email" json:"email" validate:"required,lte=255"`
 	Phonenumber string    `db:"phonenumber" json:"phonenumber" validate:"required,lte=255"`
