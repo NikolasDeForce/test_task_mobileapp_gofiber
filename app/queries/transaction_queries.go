@@ -14,7 +14,7 @@ func GetUserTransactions(id int) ([]models.Transaction, error) {
 	}
 	defer db.Close()
 
-	rows, err := db.Query("SELECT * FROM users WHERE Id = $1 \n", id)
+	rows, err := db.Query("SELECT * FROM transactions WHERE Iduser = $1 \n", id)
 	if err != nil {
 		return []models.Transaction{}, err
 	}
@@ -31,4 +31,21 @@ func GetUserTransactions(id int) ([]models.Transaction, error) {
 	}
 
 	return trc, nil
+}
+
+func InsertTransaction(t models.Transaction) error {
+	db, err := db.ConnectPostgres()
+	if err != nil {
+		db.Close()
+		return err
+	}
+	defer db.Close()
+
+	stmt, err := db.Prepare("INSERT INTO transactions(Id, Iduser, Created_At, Phonenumber, Summary) values($1, $2, $3, $4, $5)")
+	if err != nil {
+		return err
+	}
+
+	stmt.Exec(t.ID, t.IDUser, t.CreatedAt, t.Phonenumber, t.Summary)
+	return nil
 }
