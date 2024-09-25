@@ -18,7 +18,7 @@ POST запрос на платеж с указанием JWT токена
 ![Alt text](prew/history.png?raw=true "history")
 PUT запрос на получение нового токена, если этот просрочился /api/v1/:email/:password/token/new
 ![Alt text](prew/newtoken.png?raw=true "newtoken")
-PUT запрос на обновление данных пользователя с указанием данных fname, email, gender, birthday.
+PUT запрос на обновление данных пользователя с указанием данных fname, email, gender, birthday /api/v1/profile/update с указанием JWT токена
 
 Старт - `docker-compose up` потом - `go run main.go`
 Если проблема с PostgreSQL, то нужно переместить create_db.sql на машину командой - `psql -U postgres postgres -h 127.0.0.1 < create_db.sql`
